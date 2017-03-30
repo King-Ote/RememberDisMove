@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>embers</title>
+    <meta name="description" content="embers">
+    <meta name="author" content="NicoHalton">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../static/css/custom.css">
+    <script type="text/javascript" src="../static/js/zepto.min.js"></script>
+
+    <script type="text/javascript">
+        (function ($) {
+            $.extend($.fn, {
+                reveal: function () {
+                    this.show();
+                    this.animate({opacity: [0, 1]}, 1000);
+                    // `this` refers to the current Zepto collection.
+                    // When possible, return the Zepto collection to allow chaining.
+                    return this
+                }
+            })
+        })(Zepto)
+    </script>
+
+    <script type="text/javascript">
+        function addMessage(message) {
+            var div = document.createElement("div");
+            div.setAttribute('class', 'row');
+            div.innerHTML = message;
+            $("#messages").prepend(div);
+            div.animate({opacity: [0, 1], rotate: [0, 1]}, 1000);
+            var messages = $("#messages").children();
+            if (messages.length > 2) {
+                messages.last().animate({opacity: [1, 0]}, 1000);
+                messages.last().remove();
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function stoke() {
+            if ($("#stoke").val() == "climb") {
+                addMessage("fallen stone offers shelter. a tree, split by the heavens, spills smouldering embers");
+                $("#stoke").html("coax the embers");
+                $("#stoke").val("coax");
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        setTimeout(function () {
+            addMessage("black clouds broil contemptuously, threaten to swallow the earth as they have the sky");
+            setTimeout(function () {
+                addMessage("a flash of light strikes a peak far above, the only landmark in a dark world");
+                $("#stoke").show();
+            }, 2000);
+        }, 2000);
+        setInterval(function () {
+
+        }, 2000);
+    </script>
+</head>
+<body>
+<div class="container">
+    <br>
+    <div class="col-md-3">
+        UPDATES<br>
+        <div id="messages"></div>
+    </div>
+    <div class="col-md-4">LOCATIONS1</div>
+    <div class="col-md-4">LOCATIONS2
+        <div class="location" id="peak">
+            <button class="btn btn-default" type="button" id="stoke" onclick="stoke();" value="climb"
+                    style="display:none;">
+                <text>climb</text>
+            </button>
+            <div class="building" id="temple">
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1">RESOURCES
+        <div id="resources"></div>
+    </div>
+</div>
+</body>
+</html>
