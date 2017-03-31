@@ -6,56 +6,135 @@
     <meta name="description" content="embers">
     <meta name="author" content="NicoHalton">
     <link rel="stylesheet" href="../static/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../static/css/custom.css">
     <script type="text/javascript" src="../static/js/zepto.min.js"></script>
     <script type="text/javascript" src="../static/js/zepto.fx.js"></script>
     <script type="text/javascript" src="../static/js/zepto.fx_methods.js"></script>
 
     <script type="text/javascript">
-        function addToString(string, number, max) {
-            max = (typeof max !== 'undefined') ? max : 999;
-            number = Math.min(Math.max((number + parseInt(string)), 0), max);
-            return ("0000" + (number).toString()).slice(-3);
-        }
-    </script>
-
-    <script type="text/javascript">
-        function addMessage(message) {
-            var messageList = $("#messages");
-            var div = $("<div>").addClass('row');
-            div.append(message).css({'opacity': 0});
-            messageList.prepend(div);
-            div.animate({opacity: 1}, 1000);
-
-            var messages = messageList.children().last();
-            if (messages.length > 10) {
-                messages.last().hide(1000);
+        function addToVal(element, number, max) {
+            // Takes a zepto pointer thingy, grabs its val and adds number to it, min result 0
+            var elemVal = parseInt(element.val());
+            if (elemVal || (elemVal == "0")) {
+                max = (typeof max !== 'undefined') ? max : 999;
+                number = Math.min(Math.max((number + elemVal), 0), max);
+                element.val((number).toString());
             }
         }
     </script>
 
     <script type="text/javascript">
+        function addToResource(element, number, max) {
+            // Takes a zepto pointer thingy, grabs its html and adds number to it, min result 0
+            var elemVal = parseInt(element.html());
+            if (elemVal || (elemVal == "0")) {
+                max = (typeof max !== 'undefined') ? max : 999;
+                number = Math.min(Math.max((number + elemVal), 0), max);
+                element.html((number).toString());
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function addMessage(message) {
+            var messageHolder = $("#messages");
+            var div = $("<div>").addClass('row');
+            div.append(message).css('opacity', 0); // Needs content before css can be applied
+            messageHolder.prepend(div);
+            div.animate({opacity: 1}, 1000);
+
+            var messageList = messageHolder.children();
+            console.log(messageList.length);
+            if (messageList.length > 10) {
+                // New messages can get added while old ones are still fading. We need to fade the one over the limit,
+                // then after the fade remove it. After the fade, the previous fades will e done, so it will now be last
+                $(messageList[10]).fadeOut(1000, function(){$("#messages").children().last().remove()});
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function addResource(name, initVal) {
+            initVal = (typeof initVal !== 'undefined') ? initVal : 0;
+            var div = $("<div>").addClass('row');
+            var rName = $("<text>").append(name + ": ");
+            var rVal = $("<number>").attr('id', name).append(initVal).css('text-align', 'right');
+            div.append(rName).append(rVal).css('opacity', 0);
+            div.appendTo($("#resources")).show(1);
+            console.log(div.children().last().val());
+        }
+    </script>
+
+    <script type="text/javascript">
         function stoke() {
-            console.log($("#stoke").val());
-            if ($("#stoke").val() === "climb") {
-                $("#stoke").val("coax");
-                $("#stoke").html("coax the embers");
+            var stoke = $("#stoke");
+            if (stoke.val() === "climb") {
+                stoke.val("coax").html("coax the embers");
                 addMessage("fallen stone offers shelter<br>a heavens-split tree<br>out spill smouldering embers");
-            } else if (($("#stoke").val() === "coax")) {
-                $("#stoke").val("005");
-                $("#stoke").html("stoke the fire");
+            } else if ((stoke.val() === "coax")) {
+                stoke.val("5").html("feed the flame")
                 addMessage("shaking hands clutch at new life<br>each breathe is a prayer<br>the red flower winds higher");
             } else {
-                $("#stoke").val(addToString($("#stoke").val(), 100, 300));
+                var wood = $('#wood');
+                if (!wood.html()) {
+                    addMessage("can't do much with just embers");
+                    addResource("wood", 0);
+                    $('#kindling').show(1000);
+                } else if (wood.html() > "0") {
+                    upgradeFire();
+                    reportFireSize(stoke.val());
+                    addToResource(wood, -1, 300);
+                } else {
+                    addMessage("needs more wood"); // needs a popup instead??
+                }
             }
         }
     </script>
 
     <script type="text/javascript">
         function coolFire() {
-            if (parseInt($("#stoke").val())) {
-                var newFireVal = addToString($("#stoke").val(), -1);
-                $("#stoke").val(newFireVal);
+            var stoke = $("#stoke");
+            var stokeVal = stoke.val();
+            if (parseInt(stokeVal)) {
+                addToVal(stoke, -1);
+                if ((stokeVal === "1") && ($('#slope').css('display') === "none")) { // Nobody to light it for you again
+                    addMessage('You like FACTUALLY let that one die you fuck');
+                    stoke.val("coax").html("coax the embers");
+                } else if (stokeVal === "1") { // Went out, but ya boi relit it
+                    addMessage('a humble serf stokes the flame');
+                    upgradeFire();
+                } else if ((stokeVal === "101") || (stokeVal === "201")) { // Fire has downgraded in size
+                    reportFireSize(stokeVal - 1);
+                }
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function upgradeFire() {
+            var stoke = $('#stoke');
+            stoke.val(Math.min(stoke.val() - (stoke.val() % 100) + 200, 300)); // From 0-99 to 200, 100-199 to 300
+            var slope = $('#slope');
+            if ((stoke.val() > "200") && ((slope.css('display')) === "none")) {
+                slope.show(1000);
+                $('#kindling').hide(1000); // I need a less ugly hide. Probs linear opacity and a non-linear scaleX
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function reportFireSize(stokeVal) {
+            if (stokeVal > "200") {
+                if ($('#slope').css('display') === "none") { // If you can't see the next area yet, you just unlocked it
+                    addMessage("Roaring baby, and it's attracting company");
+                } else {
+                    addMessage("Roaring baby");
+                }
+            } else if (stokeVal > "100") {
+                addMessage('Toasty, I guess');
+            } else if (stokeVal > "0") {
+                addMessage('This fire bloooowwwssss');
+            } else {
+                addMessage('You like FACTUALLY let that one die you fuck');
             }
         }
     </script>
@@ -71,7 +150,7 @@
 
         setInterval(function () {
             coolFire();
-        }, 2000);
+        }, 1000);
     </script>
 </head>
 <body>
@@ -84,11 +163,28 @@
     <div class="col-md-4">LOCATIONS1</div>
     <div class="col-md-4">LOCATIONS2
         <div class="location" id="peak">
-            <button class="btn btn-default" type="button" id="stoke" onclick="stoke();" value="climb"
-                    style="display:none;">
-                climb
-            </button>
+            <text>the peak</text>
+            <div class="row">
+                <button class="btn btn-default" type="button" id="stoke" onclick="stoke();" value="climb"
+                        style="display:none;">
+                    climb
+                </button>
+            </div>
+            <div class="row">
+                <button class="btn btn-default" type="button" id="kindling" onclick="addToResource($('#wood'), 1);"
+                        style="display:none;">
+                    gather kindling
+                </button>
+            </div>
             <div class="building" id="temple">
+            </div>
+        </div>
+        <div class="location" id="slope" style="display:none;">
+            <text>the slope</text>
+            <div class="row">
+                <button class="btn btn-default" type="button" id="gatherWood" onclick="addToResource($('#wood'), 5);">
+                    gather wood
+                </button>
             </div>
         </div>
     </div>
