@@ -23,14 +23,31 @@
     </script>
 
     <script type="text/javascript">
-        function addToResource(element, number, max) {
+        function addToResource(resource, number, max) {
             // Takes a zepto pointer thingy, grabs its html and adds number to it, min result 0
-            var elemVal = parseInt(element.html());
+            resourceHolder = $("#" + resource);
+            console.log(resource);
+            console.log(parseInt(resourceHolder.html()));
+            var elemVal = parseInt(resourceHolder.html());
             if (elemVal || (elemVal == "0")) {
                 max = (typeof max !== 'undefined') ? max : 999;
                 number = Math.min(Math.max((number + elemVal), 0), max);
-                element.html((number).toString());
+                resourceHolder.html((number).toString());
+            } else {
+                addResource(resource, number);
             }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function addResource(name, initVal) {
+            initVal = (typeof initVal !== 'undefined') ? initVal : 0;
+            var div = $("<div>").addClass('row');
+            var rName = $("<text>").append(name + ": ");
+            var rVal = $("<number>").attr('id', name).append(initVal).css('text-align', 'right');
+            div.append(rName).append(rVal).css('opacity', 0);
+            div.appendTo($("#resources")).show(1);
+            console.log("Resource '" + name + "' discovered");
         }
     </script>
 
@@ -47,20 +64,10 @@
             if (messageList.length > 10) {
                 // New messages can get added while old ones are still fading. We need to fade the one over the limit,
                 // then after the fade remove it. After the fade, the previous fades will e done, so it will now be last
-                $(messageList[10]).fadeOut(1000, function(){$("#messages").children().last().remove()});
+                $(messageList[10]).fadeOut(1000, function () {
+                    $("#messages").children().last().remove()
+                });
             }
-        }
-    </script>
-
-    <script type="text/javascript">
-        function addResource(name, initVal) {
-            initVal = (typeof initVal !== 'undefined') ? initVal : 0;
-            var div = $("<div>").addClass('row');
-            var rName = $("<text>").append(name + ": ");
-            var rVal = $("<number>").attr('id', name).append(initVal).css('text-align', 'right');
-            div.append(rName).append(rVal).css('opacity', 0);
-            div.appendTo($("#resources")).show(1);
-            console.log(div.children().last().val());
         }
     </script>
 
@@ -71,18 +78,17 @@
                 stoke.val("coax").html("coax the embers");
                 addMessage("fallen stone offers shelter<br>a heavens-split tree<br>out spill smouldering embers");
             } else if ((stoke.val() === "coax")) {
-                stoke.val("5").html("feed the flame")
+                stoke.val("10").html("feed the flame")
                 addMessage("shaking hands clutch at new life<br>each breathe is a prayer<br>the red flower winds higher");
             } else {
                 var wood = $('#wood');
                 if (!wood.html()) {
                     addMessage("can't do much with just embers");
-                    addResource("wood", 0);
+                    addResource('wood', 0);
                     $('#kindling').show(1000);
                 } else if (wood.html() > "0") {
                     upgradeFire();
-                    reportFireSize(stoke.val());
-                    addToResource(wood, -1, 300);
+                    addToResource('wood', -1, 300);
                 } else {
                     addMessage("needs more wood"); // needs a popup instead??
                 }
@@ -99,7 +105,7 @@
                 if ((stokeVal === "1") && ($('#slope').css('display') === "none")) { // Nobody to light it for you again
                     addMessage('You like FACTUALLY let that one die you fuck');
                     stoke.val("coax").html("coax the embers");
-                } else if (stokeVal === "1") { // Went out, but ya boi relit it
+                } else if ((stokeVal === "1") && (parseInt($("#wood").html()) > 0) ) { // Went out, but ya boi relit it
                     addMessage('a humble serf stokes the flame');
                     upgradeFire();
                 } else if ((stokeVal === "101") || (stokeVal === "201")) { // Fire has downgraded in size
@@ -112,11 +118,17 @@
     <script type="text/javascript">
         function upgradeFire() {
             var stoke = $('#stoke');
-            stoke.val(Math.min(stoke.val() - (stoke.val() % 100) + 200, 300)); // From 0-99 to 200, 100-199 to 300
+            var stokeVal = stoke.val();
+            stoke.val(Math.min(stokeVal - (stokeVal % 100) + 200, 300)); // From 0-99 to 200, 100-199 to 300
+            var stokeVal = stoke.val();
             var slope = $('#slope');
-            if ((stoke.val() > "200") && ((slope.css('display')) === "none")) {
-                slope.show(1000);
-                $('#kindling').hide(1000); // I need a less ugly hide. Probs linear opacity and a non-linear scaleX
+            if ((stokeVal > "200") && ((slope.css('display')) === "none")) {
+                slope.show(1000); // If you can't see the next area yet, you just unlocked it
+                addToResource('food', 10);
+                addMessage("Roaring baby, and it attracted a dumbbutt with a handfull of grapes");
+                $('#kindling').hide(1000); // I need a less ugly hide. Probs linear opacity and a non-linear scaleY
+            } else {
+                reportFireSize(stokeVal);
             }
         }
     </script>
@@ -124,9 +136,7 @@
     <script type="text/javascript">
         function reportFireSize(stokeVal) {
             if (stokeVal > "200") {
-                if ($('#slope').css('display') === "none") { // If you can't see the next area yet, you just unlocked it
-                    addMessage("Roaring baby, and it's attracting company");
-                } else {
+                if ($('#slope').css('display') !== "none") {
                     addMessage("Roaring baby");
                 }
             } else if (stokeVal > "100") {
@@ -140,6 +150,20 @@
     </script>
 
     <script type="text/javascript">
+        function consumeFood() {
+            if ($('#slope').css('display') !== "none") {
+                addToResource('food', -1);
+                if ($("#food").html() === "0") {
+                    addMessage("No food left. Your homies are dippin'");
+                    $("#slope").hide(1000);
+                    $('#kindling').show(1000);
+                }
+            }
+        }
+    </script>
+
+
+    <script type="text/javascript">
         setTimeout(function () {
             addMessage("black clouds broil contemptuous<br>lightning breaks the sky<br>swallowing soon the cold earth");
             setTimeout(function () {
@@ -150,6 +174,7 @@
 
         setInterval(function () {
             coolFire();
+            consumeFood();
         }, 1000);
     </script>
 </head>
@@ -171,7 +196,7 @@
                 </button>
             </div>
             <div class="row">
-                <button class="btn btn-default" type="button" id="kindling" onclick="addToResource($('#wood'), 1);"
+                <button class="btn btn-default" type="button" id="kindling" onclick="addToResource('wood', 1);"
                         style="display:none;">
                     gather kindling
                 </button>
@@ -182,8 +207,11 @@
         <div class="location" id="slope" style="display:none;">
             <text>the slope</text>
             <div class="row">
-                <button class="btn btn-default" type="button" id="gatherWood" onclick="addToResource($('#wood'), 5);">
+                <button class="btn btn-default" type="button" id="gatherWood" onclick="addToResource('wood', 5);">
                     gather wood
+                </button>
+                <button class="btn btn-default" type="button" id="gatherFood" onclick="addToResource('food', 5);">
+                    gather food
                 </button>
             </div>
         </div>
