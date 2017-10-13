@@ -4,12 +4,12 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Unity WebGL Player | The Worst Wizard</title>
-    <link rel="shortcut icon" href="/unity-builds/WorstWizard/TemplateData/favicon.ico">
-    <link rel="stylesheet" href="/unity-builds/WorstWizard/TemplateData/style.css">
-    <script src="/unity-builds/WorstWizard/TemplateData/UnityProgress.js"></script>
-    <script src="/unity-builds/WorstWizard/Build/UnityLoader.js"></script>
+    <link rel="shortcut icon" href="{{url_for('static', filename='unity-builds/WorstWizard/TemplateData/favicon.ico')}}">
+    <link rel="stylesheet" href="{{url_for('static', filename='unity-builds/WorstWizard/TemplateData/style.css')}}">
+    <script src="{{url_for('static', filename='unity-builds/WorstWizard/TemplateData/UnityProgress.js')}}"></script>
+    <script src="{{url_for('static', filename='unity-builds/WorstWizard/Build/UnityLoader.js')}}"></script>
     <script>
-      var gameInstance = UnityLoader.instantiate("gameContainer", "/unity-builds/WorstWizard/Build/Builds.json",
+      var gameInstance = UnityLoader.instantiate("gameContainer", "{{url_for('static', filename='unity-builds/WorstWizard/Build/Builds.json')}}",
           {onProgress: UnityProgress});
     </script>
   </head>
