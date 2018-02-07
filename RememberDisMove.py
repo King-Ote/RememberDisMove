@@ -23,10 +23,15 @@ def games_route():
 def embers_route():
     return render_template("embers.html")
 
+
 @app.route('/games/worstwizard')
 def worstwizard_route():
     return render_template("worstwizard.html")
 
+
+@app.route('/vanessa')
+def v():
+    return render_template("v.html")
 
 
 if __name__ == '__main__':
