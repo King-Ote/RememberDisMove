@@ -24,14 +24,26 @@ def embers_route():
     return render_template("embers.html")
 
 
+<<<<<<< HEAD
 @app.route('/games/tyvm')
 def tyvm_route():
     return render_template("tyvm.html")
 
 
+=======
+>>>>>>> origin/master
 @app.route('/games/worstwizard')
 def worstwizard_route():
     return render_template("worstwizard.html")
 
+<<<<<<< HEAD
+=======
+
+@app.route('/vanessa')
+def v():
+    return render_template("v.html")
+
+
+>>>>>>> origin/master
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=5000, debug=True)
