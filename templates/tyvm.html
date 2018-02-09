@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>tyvm</title>
+    <meta name="description" content="tyvm">
+    <meta name="author" content="NicoHalton">
+    <link rel="stylesheet" href="../static/css/bootstrap.min.css">
+    <script type="text/javascript" src="../static/js/zepto.min.js"></script>
+    <script type="text/javascript" src="../static/js/zepto.fx.js"></script>
+    <script type="text/javascript" src="../static/js/zepto.fx_methods.js"></script>
+
+    <style>
+        input.image {height: 100%; width: 100%; object-fit: contain}
+        img {height: 100%; width: 100%; object-fit: contain; display: none;}
+    </style>
+
+    <script type="text/javascript">
+        function padLeft (num) {
+            var str = num.toString()
+            var pad = "000";
+            return pad.substring(0, pad.length - str.length) + str;
+        }
+    </script>
+
+
+    <script type="text/javascript">
+        function addClothes(whichCloth) {
+            //Change menu
+            var menu = parseInt($("#currentMenu").html());
+            $("#" + menu).hide();
+            $("#" + (menu+1)).show();
+            $("#currentMenu").html(menu + 1);
+
+            //Change current image
+            var currentImg = $("#currentImg").html();
+            var newImg = padLeft((parseInt(whichCloth) + parseInt(currentImg)));
+            $("#" + currentImg).hide();
+            $("#" + newImg).show();
+            $("#currentImg").html(newImg);
+
+            console.log(currentImg + "+" + whichCloth + "=" + newImg);
+            console.log(menu + " to " + (menu+1));
+        }
+    </script>
+
+    <script type="text/javascript">
+        function back() {
+            //Change menu
+            var menu = parseInt($("#currentMenu").html());
+            if (menu > 1) {
+                $("#" + menu).hide();
+                $("#" + (menu - 1)).show();
+                $("#currentMenu").html(menu - 1);
+            }
+            //Change current image FIX MEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE!!!!!!!!!!!!
+            var currentImg = $("#currentImg").html();
+            if (currentImg !== "000") {
+                $("#" + currentImg).hide();
+                $("#" + newImg).show();
+                $("#currentImg").html(newImg);
+            }
+        }
+    </script>
+
+    <script type="text/javascript">
+        function reset() {
+            //Change menu
+            $("#" + parseInt($("#currentMenu").html())).hide();
+            $("#1").show();
+            $("#currentMenu").html("1");
+
+            //Change current image
+            $("#" + $("#currentImg").html()).hide();
+            $("#000").show();
+            $("#currentImg").html("000");
+        }
+    </script>
+
+
+</head>
+<body>
+<div class="container" style="background-color: yellow; ">
+    <div class="col-xs-4">
+        <text id="currentMenu" style="display:none;">1</text>
+        <input class="image" type="image" src="{{url_for('static', filename='R.png')}}"
+               onclick="reset();"/>
+        <input class="image" type="image" src="{{url_for('static', filename='B.png')}}"
+               onclick="back();"/>
+
+        <div id="1">
+            <input class="image" type="image" src="{{url_for('static', filename='T1.png')}}"
+                   onclick="addClothes('001');"/>
+            <input class="image" type="image" src="{{url_for('static', filename='T2.png')}}"
+                   onclick="addClothes('002');"/>
+            <input class="image" type="image" src="{{url_for('static', filename='T3.png')}}"
+                   onclick="addClothes('003');"/>
+            <input class="image" type="image" src="{{url_for('static', filename='T4.png')}}"
+                   onclick="addClothes('004');"/>
+        </div>
+
+        <div id="2" style="display:none;">
+            <input class="image" type="image" src="{{url_for('static', filename='P1.png')}}"
+                   onclick="addClothes('010');"/>
+            <input class="image" type="image" src="{{url_for('static', filename='P2.png')}}"
+                   onclick="addClothes('020');"/>
+            <input class="image" type="image" src="{{url_for('static', filename='P3.png')}}"
+                   onclick="addClothes('030');"/>
+        </div>
+
+        <div id="3" style="display:none;">
+            <input class="image" type="image" src="{{url_for('static', filename='A.png')}}"
+                   onclick="addClothes('100');"/>
+        </div>
+        <div id="4" style="display:none;">
+            Lookin' HELLA cute holy damn
+        </div>
+    </div>
+    <div class="col-xs-8">
+        <text id="currentImg" style="display:none;">000</text>
+        <img id="000" src="{{url_for('static', filename='000.png')}}"
+             style="display:inline;"/>
+        <img id="001" src="{{url_for('static', filename='001.png')}}"/>
+        <img id="002" src="{{url_for('static', filename='002.png')}}"/>
+        <img id="003" src="{{url_for('static', filename='003.png')}}"/>
+        <img id="004" src="{{url_for('static', filename='004.png')}}"/>
+        <img id="011" src="{{url_for('static', filename='011.png')}}"/>
+        <img id="013" src="{{url_for('static', filename='013.png')}}"/>
+        <img id="014" src="{{url_for('static', filename='014.png')}}"/>
+        <img id="021" src="{{url_for('static', filename='021.png')}}"/>
+        <img id="023" src="{{url_for('static', filename='023.png')}}"/>
+        <img id="024" src="{{url_for('static', filename='024.png')}}"/>
+        <img id="031" src="{{url_for('static', filename='031.png')}}"/>
+        <img id="032" src="{{url_for('static', filename='032.png')}}"/>
+        <img id="033" src="{{url_for('static', filename='033.png')}}"/>
+        <img id="034" src="{{url_for('static', filename='034.png')}}"/>
+        <img id="111" src="{{url_for('static', filename='111.png')}}"/>
+        <img id="112" src="{{url_for('static', filename='112.png')}}"/>
+        <img id="113" src="{{url_for('static', filename='113.png')}}"/>
+        <img id="114" src="{{url_for('static', filename='114.png')}}"/>
+        <img id="121" src="{{url_for('static', filename='121.png')}}"/>
+        <img id="123" src="{{url_for('static', filename='123.png')}}"/>
+        <img id="124" src="{{url_for('static', filename='124.png')}}"/>
+        <img id="131" src="{{url_for('static', filename='131.png')}}"/>
+        <img id="133" src="{{url_for('static', filename='133.png')}}"/>
+        <img id="134" src="{{url_for('static', filename='134.png')}}"/>
+    </div>
+</div>
+</body>
+</html>

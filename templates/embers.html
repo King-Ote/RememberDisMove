@@ -63,7 +63,7 @@
             console.log(messageList.length);
             if (messageList.length > 10) {
                 // New messages can get added while old ones are still fading. We need to fade the one over the limit,
-                // then after the fade remove it. After the fade, the previous fades will e done, so it will now be last
+                // then after the fade remove it. After the fade the previous fades will be done, so it will now be last
                 $(messageList[10]).fadeOut(1000, function () {
                     $("#messages").children().last().remove()
                 });

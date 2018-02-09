@@ -23,11 +23,15 @@ def games_route():
 def embers_route():
     return render_template("embers.html")
 
+
+@app.route('/games/tyvm')
+def tyvm_route():
+    return render_template("tyvm.html")
+
+
 @app.route('/games/worstwizard')
 def worstwizard_route():
     return render_template("worstwizard.html")
-
-
 
 if __name__ == '__main__':
     app.run(host="127.0.0.1", port=5000, debug=True)
